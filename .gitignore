@@ -1,3 +1,6 @@
 __pycache__/
 geckodriver.log
 based.json
+*.png
+*.jpg
+*.jpeg

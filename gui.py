@@ -162,9 +162,7 @@ class MyFrame ( wx.Frame ):
 
         for group in progress:
             for count in group:
-                print("Updating to", count)
                 progress_bar.Update(count, "Downloading wallpaper #" + str(count))
-                print("Progress bar now at ", progress_bar.GetValue())
 
         progress_bar.Destroy()
 

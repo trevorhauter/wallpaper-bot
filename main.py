@@ -92,6 +92,7 @@ class redditCollector():
             p = ImageFile.Parser()
             data = file.read(1024)
             if not data:
+                print("Image size can't be verified... skipping...")
                 return False
             p.feed(data)
             if p.image:
@@ -101,10 +102,11 @@ class redditCollector():
 
         width, height = image_data
 
-        print(f"Image width: {width} Image hgt {height}")
         if width != self.resolution[0] or height != self.resolution[1]:
+            print(f"Invalid image size {width}x{height}... skipping...")
             return False
         else:
+            print(f"Valid image size! {width}x{height}... downloading")
             return True
 
     def download_posts(self, last_post_id=None):
