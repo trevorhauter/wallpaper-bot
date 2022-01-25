@@ -1,14 +1,16 @@
 import requests
 import json
 import urllib
-from PIL import Image, ImageFile
+from PIL import ImageFile
 from pathlib import Path
 
+
 class redditCollector():
-    def __init__(self, form):
+    def __init__(self, form, file_path):
         """
         Parameters:
             form (dict): Dictionary containing all the data we need to collect wallpapers for the user
+            file_path (str): the file_path string
         """
         self.MAX_RETRIES = 5
         self.RETRIES = 0
@@ -16,6 +18,7 @@ class redditCollector():
         self.success = False
         self.last_post_id = None
 
+        self.file_path = file_path
         self.wallpapers_requested = form['wallpapers_requested']
         self.resolution = self.parse_resolution(form['resolution'])
         self.subreddit = form['subreddit'].lower()
@@ -46,7 +49,6 @@ class redditCollector():
         # Get the credentials from base.json (if you don't have the file, you won't be able to use this)
         with open('based.json') as json_file:
             credentials = json.load(json_file)
-
 
         # Information that we get from reddit. IMPORTANT TO KEEP PRIVATE
         CLIENT_ID = credentials['CLIENT_ID']
@@ -118,8 +120,7 @@ class redditCollector():
             last_post_id (str|None): The ID of the post we left off on (exists)
 
         Returns:
-            success (boolean): Whether or not we got the amount of posts we want
-            last_post_id (str): The ID of the last post we left off on
+            None
         """
 
         # Make a request to get the posts from the subreddit
@@ -171,16 +172,18 @@ class redditCollector():
             
             # Gets the image name
             image_name = image_url[image_url.rfind('/') + 1:]
-        
-            # For now the image_path is just in this directory. In the future we'll be able to configure it
-            image_path = image_name
-
             
             self.last_post_id = kind + id
 
             if self.valid_resolution(image_url) and self.downloaded < self.wallpapers_requested:
                 # download and name image
-                urllib.request.urlretrieve(image_url, image_path)
+                if self.file_path:
+                    if '/' in self.file_path:
+                        urllib.request.urlretrieve(image_url, self.file_path + '/' + image_name)
+                    else:
+                        urllib.request.urlretrieve(image_url, self.file_path + '\\' + image_name)
+                else:
+                    urllib.request.urlretrieve(image_url, image_name)
                 # we yield the download count so that way we can update the progress bar
                 self.downloaded += 1
                 yield self.downloaded
@@ -198,7 +201,7 @@ class redditCollector():
         self.headers = self.login()
 
         while not self.success and self.RETRIES < self.MAX_RETRIES:
-            print(f"Downloading {self.wallpapers_requested} images")
+            print(f"Downloading {self.wallpapers_requested} images to {self.file_path}")
             yield self.download_posts()
             self.RETRIES += 1
         
