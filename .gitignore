@@ -2,6 +2,7 @@ __pycache__/
 geckodriver.log
 based.json
 settings.json
+retrieved_wallpapers.json
 *.png
 *.jpg
 *.jpeg

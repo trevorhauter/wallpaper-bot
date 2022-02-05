@@ -25,6 +25,21 @@ class redditCollector():
         self.sort_by = form['sort-by'].lower()
         self.check_for_duplicates = form['check_for_duplicates']
 
+        # If we already have a record of the retrieved wallpapers, load it, otherwise create a new one so if the user wants to avoid
+        # duplicates we can
+        if Path('retrieved_wallpapers.json').is_file():
+            with open('retrieved_wallpapers.json') as retrieved_wallpapers:
+                self.retrieved_wallpapers = json.load(retrieved_wallpapers)
+        else:
+            self.retrieved_wallpapers = []
+
+    def updated_retrieved_wallpapers(self):
+        """
+        Updates our local json object so we can keep track of what wallpapers the user has already downloaded
+        """
+        with open('retrieved_wallpapers.json', 'w+') as retrieved_wallpapers:
+                retrieved_wallpapers.write(json.dumps(self.retrieved_wallpapers))
+
     def parse_resolution(self, res):
         """
         Converts the resolution from a string to a list of ints
@@ -176,6 +191,11 @@ class redditCollector():
             self.last_post_id = kind + id
 
             if self.valid_resolution(image_url) and self.downloaded < self.wallpapers_requested:
+                if self.check_for_duplicates:
+                    # If we are checking for duplicates, and this image is already in our retrieved wallpapers record, skip
+                    if image_name in self.retrieved_wallpapers:
+                        continue
+
                 # download and name image
                 if self.file_path:
                     if '/' in self.file_path:
@@ -184,6 +204,8 @@ class redditCollector():
                         urllib.request.urlretrieve(image_url, self.file_path + '\\' + image_name)
                 else:
                     urllib.request.urlretrieve(image_url, image_name)
+                # Now that we've downloaded the image, update the record
+                self.retrieved_wallpapers.append(image_name)
                 # we yield the download count so that way we can update the progress bar
                 self.downloaded += 1
                 yield self.downloaded
@@ -205,4 +227,6 @@ class redditCollector():
             yield self.download_posts()
             self.RETRIES += 1
         
+        self.updated_retrieved_wallpapers()
+
         print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")

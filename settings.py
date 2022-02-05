@@ -8,20 +8,12 @@ class user_profile():
     user_profile might be a bit of an overstatement
     """
     def __init__(self):
-        pass
-
-    def get_settings(self):
-        """
-        Checks to see if settgins.json exists, if so it returns the content
-
-        Returns:
-            None or Dictionary
-        """
+        # This is the variable we store our settings in
         if Path('settings.json').is_file():
             with open('settings.json') as settings:
-                return json.load(settings)
+                self.settings = json.load(settings)
         else:
-            return None
+            self.settings = None
 
     def save_settings(self, form=None, file_path=None):
         """

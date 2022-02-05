@@ -30,7 +30,7 @@ class MyFrame ( wx.Frame ):
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
         # Get the settings
-        settings = profile.get_settings()
+        settings = profile.settings
         # Set the values that will be displayed in our fields
         
         if settings and 'subreddit' in settings:
