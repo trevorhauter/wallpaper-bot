@@ -84,7 +84,7 @@ class MyFrame ( wx.Frame ):
 
         bSizer2.Add( self.sort_label, 0, wx.ALL, 5 )
 
-        sort_selectorChoices = ["New", "Hot"]
+        sort_selectorChoices = ["New", "Hot", "Random", "Rising"]
         # Sets the sort selector to the users last value if any
         self.sort_selector = wx.ComboBox( self, wx.ID_ANY, sort_selector_value, wx.DefaultPosition, wx.DefaultSize, sort_selectorChoices, 0 )
         bSizer2.Add( self.sort_selector, 0, wx.ALL, 5 )
@@ -94,7 +94,7 @@ class MyFrame ( wx.Frame ):
 
         bSizer2.Add( self.resolution_label, 0, wx.ALL, 5 )
 
-        resolution_selectorChoices = ["1920x1080"]
+        resolution_selectorChoices = ["1280x720", "1366x768", "1440x900", "1536x864", "1920x1080", "2560x1440", "3840x2160"]
         # Sets the resolution to the users last value if any
         self.resolution_selector = wx.ComboBox( self, wx.ID_ANY, resolution_value, wx.DefaultPosition, wx.DefaultSize, resolution_selectorChoices, 0 )
         bSizer2.Add( self.resolution_selector, 0, wx.ALL, 5 )
@@ -164,6 +164,7 @@ class MyFrame ( wx.Frame ):
         dialog = wx.DirDialog (None, message = 'Pick a directory.' )
         if dialog.ShowModal() == wx.ID_OK:
             print(f"Default directory has been changed to {dialog.GetPath()}")
+            self.file_path = dialog.GetPath()
             profile.save_settings(file_path=dialog.GetPath())
         else:
             pass
