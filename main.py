@@ -13,7 +13,6 @@ class redditCollector:
             form (dict): Dictionary containing all the data we need to collect wallpapers for the user
             file_path (str): the file_path string
         """
-        self.MAX_RETRIES = 10
         self.RETRIES = 0
         self.downloaded = 0
         self.success = False
@@ -21,6 +20,7 @@ class redditCollector:
 
         self.file_path = file_path
         self.wallpapers_requested = form["wallpapers_requested"]
+        self.MAX_RETRIES = int((self.wallpapers_requested * (10 ** 3)) / 100)
         self.resolution = self.parse_resolution(form["resolution"])
         self.subreddit = form["subreddit"].lower()
         self.sort_by = form["sort-by"].lower()
@@ -246,4 +246,4 @@ class redditCollector:
         if self.success:
             print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")
         else:
-            print(f"FINISHED! Failed to download desired amount of wallpapers. Only were {self.wallpapers_requested} retrieved")
+            print(f"FINISHED! Failed to download desired amount of wallpapers. Only were {self.downloaded} retrieved")
