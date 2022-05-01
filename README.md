@@ -9,4 +9,12 @@ python3 -m pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/
 If you want to use this program with your own reddit bot, just follow this stuff here
 https://towardsdatascience.com/how-to-use-the-reddit-api-in-python-5e05ddfd1e5c
 
-You just need a json file called based.json containing the keys CLIENT_ID, and SECRET (which you can find using the article above) and the program will use your API credentials!
+Once you have all of the stuff set up from the article, take the credentials created for the bot and place them in a file called based.json in this data structure
+```
+{
+  "SECRET": SECRET,
+  "CLIENT_ID": CLIENT_ID,
+  "USERNAME": USERNAME,
+  "PASSWORD": PASSWORD
+}
+```
