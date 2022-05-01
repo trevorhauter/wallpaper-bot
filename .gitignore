@@ -1,8 +1,11 @@
 __pycache__/
+build/
 geckodriver.log
 based.json
 settings.json
 retrieved_wallpapers.json
+main.spec
+
 *.png
 *.jpg
 *.jpeg
