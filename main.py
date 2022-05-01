@@ -95,7 +95,7 @@ class redditCollector:
         # returns updated headers dict with access token
         return {**headers, **{"Authorization": f"bearer {TOKEN}"}}
 
-    def valid_resolution(self, url):
+    def is_valid_resolution(self, url):
         """
         Checks the resolution of the image before downloading it, then determines whether or not it matches what the user
         wanted
@@ -104,7 +104,8 @@ class redditCollector:
             url (str): url to the source of the image
 
         Returns:
-            (boolean): Whether or not the image had a valid resolution
+            (boolean): Whether or not the image had a valid resolution,
+            (str|NoneType): The resolution of the image we found (to be used for better logging)
         """
 
         # get file size *and* image size (None if not known)
@@ -116,21 +117,19 @@ class redditCollector:
             data = file.read(1024)
             if not data:
                 print("Image size can't be verified... skipping...")
-                return False
+                return False, None
             p.feed(data)
             if p.image:
                 image_data = p.image.size
             else:
-                return False
+                return False, None
 
         width, height = image_data
 
         if any(width == res[0] or height == res[1] for res in self.resolutions):
-            print(f"Valid image size! {width}x{height}... downloading")
-            return True
+            return True, f"{width}x{height}"
         else:
-            print(f"Invalid image size {width}x{height}... skipping...")
-            return False
+            return False, f"{width}x{height}"
 
     def download_posts(self, last_post_id=None):
         """
@@ -197,15 +196,18 @@ class redditCollector:
 
             self.last_post_id = kind + id
 
+            valid_resolution, resolution = self.is_valid_resolution(image_url)
+
             if (
-                self.valid_resolution(image_url)
+                valid_resolution
                 and self.downloaded < self.wallpapers_requested
             ):
                 if self.check_for_duplicates:
                     # If we are checking for duplicates, and this image is already in our retrieved wallpapers record, skip
                     if image_name in self.retrieved_wallpapers:
+                        print("Duplicate image found, skipping...")
                         continue
-
+                print(f"Valid image size {resolution}! Downloading...")
                 # download and name image
                 if self.file_path:
                     if "/" in self.file_path:
@@ -226,6 +228,11 @@ class redditCollector:
                 if self.downloaded == self.wallpapers_requested:
                     self.success = True
                     return
+            elif not valid_resolution and self.downloaded < self.wallpapers_requested and resolution is not None:
+                # This elif statement is so we can just properly log if a resolution is invalid while we're still trying to download
+                # wallpapers
+                print(f"Invalid image size {resolution}... skipping...")
+            
 
     def collect_wallpapers(self):
         """
