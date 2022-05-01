@@ -1,8 +1,9 @@
+from PIL import ImageFile
+from pathlib import Path
+
 import requests
 import json
 import urllib
-from PIL import ImageFile
-from pathlib import Path
 
 
 class redditCollector:
@@ -12,7 +13,7 @@ class redditCollector:
             form (dict): Dictionary containing all the data we need to collect wallpapers for the user
             file_path (str): the file_path string
         """
-        self.MAX_RETRIES = 5
+        self.MAX_RETRIES = 10
         self.RETRIES = 0
         self.downloaded = 0
         self.success = False
@@ -242,4 +243,7 @@ class redditCollector:
 
         self.updated_retrieved_wallpapers()
 
-        print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")
+        if self.success:
+            print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")
+        else:
+            print(f"FINISHED! Failed to download desired amount of wallpapers. Only were {self.wallpapers_requested} retrieved")

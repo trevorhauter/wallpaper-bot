@@ -14,7 +14,9 @@ import wx.xrc
 ## Class MyFrame
 ###########################################################################
 
-import time
+from pathlib import Path
+
+import json
 
 from main import redditCollector
 from settings import user_profile
@@ -58,6 +60,7 @@ class MyFrame(wx.Frame):
         else:
             self.file_path = ""
 
+
         gSizer1 = wx.GridSizer(0, 2, 0, 0)
 
         bSizer1 = wx.BoxSizer(wx.VERTICAL)
@@ -69,7 +72,16 @@ class MyFrame(wx.Frame):
 
         bSizer1.Add(self.sub_selector, 0, wx.ALL, 5)
 
-        sub_selectorChoices = ["Wallpapers", "Art"]
+        subreddit_choices = ["Wallpapers", "Art"]
+        # Check to see if the user added their own wallpapers with a json file
+        if Path("subreddits.json").is_file():
+            with open("subreddits.json", "r") as subreddits_file:
+                subreddits = json.load(subreddits_file)
+            if subreddits:
+                subreddit_choices = list(set(subreddits + subreddit_choices))
+                print(subreddit_choices)
+
+        sub_selectorChoices = subreddit_choices
         # Sets the subreddit selector to the users last value if any
         self.sub_selector = wx.ComboBox(
             self,
@@ -263,7 +275,7 @@ class MyFrame(wx.Frame):
         print("Starting")
         progress_bar = wx.ProgressDialog(
             " Running...",
-            "Logging into the cabinet...",
+            "Retrieving wallpapers from reddit... Whatever that is...",
             maximum=req,
             parent=None,
             style=wx.PD_AUTO_HIDE | wx.PD_APP_MODAL | wx.PD_SMOOTH,
