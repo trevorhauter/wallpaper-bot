@@ -246,4 +246,4 @@ class redditCollector:
         if self.success:
             print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")
         else:
-            print(f"FINISHED! Failed to download desired amount of wallpapers. Only were {self.downloaded} retrieved")
+            print(f"FINISHED! Failed to download desired amount of wallpapers. {self.downloaded} wallpapers were retrieved")
