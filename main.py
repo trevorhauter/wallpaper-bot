@@ -21,7 +21,7 @@ class redditCollector:
         self.file_path = file_path
         self.wallpapers_requested = form["wallpapers_requested"]
         self.MAX_RETRIES = int((self.wallpapers_requested * (10 ** 3)) / 100)
-        self.resolution = self.parse_resolution(form["resolution"])
+        self.resolutions = [self.parse_resolution(resolution) for resolution in form["resolutions"]]
         self.subreddit = form["subreddit"].lower()
         self.sort_by = form["sort-by"].lower()
         self.check_for_duplicates = form["check_for_duplicates"]
@@ -125,12 +125,12 @@ class redditCollector:
 
         width, height = image_data
 
-        if width != self.resolution[0] or height != self.resolution[1]:
-            print(f"Invalid image size {width}x{height}... skipping...")
-            return False
-        else:
+        if any(width == res[0] or height == res[1] for res in self.resolutions):
             print(f"Valid image size! {width}x{height}... downloading")
             return True
+        else:
+            print(f"Invalid image size {width}x{height}... skipping...")
+            return False
 
     def download_posts(self, last_post_id=None):
         """

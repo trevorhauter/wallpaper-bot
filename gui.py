@@ -32,7 +32,7 @@ class MyFrame(wx.Frame):
             id=wx.ID_ANY,
             title=wx.EmptyString,
             pos=wx.DefaultPosition,
-            size=wx.Size(500, 350),
+            size=wx.Size(600, 500),
             style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL,
         )
 
@@ -46,13 +46,13 @@ class MyFrame(wx.Frame):
             sub_selector_value = settings["subreddit"]
             sort_selector_value = settings["sort-by"]
             wallpapers_requested_value = str(settings["wallpapers_requested"])
-            resolution_value = settings["resolution"]
+            resolutions = settings["resolutions"]
             check_duplicates_value = settings["check_for_duplicates"]
         else:
             sub_selector_value = ""
             sort_selector_value = ""
             wallpapers_requested_value = ""
-            resolution_value = ""
+            resolutions = ""
             check_duplicates_value = False
 
         if settings and "file_path" in settings:
@@ -142,7 +142,9 @@ class MyFrame(wx.Frame):
 
         bSizer2.Add(self.resolution_label, 0, wx.ALL, 5)
 
-        resolution_selectorChoices = [
+        # Create a container to contain all of the resolution choices
+        self.resolution_checkbox_container = wx.GridSizer( 0, 2, 0, 0 )
+        self.resolution_selectorChoices = [
             "1280x720",
             "1366x768",
             "1440x900",
@@ -151,18 +153,32 @@ class MyFrame(wx.Frame):
             "2560x1440",
             "3840x2160",
         ]
-        # Sets the resolution to the users last value if any
-        self.resolution_selector = wx.ComboBox(
-            self,
-            wx.ID_ANY,
-            resolution_value,
-            wx.DefaultPosition,
-            wx.DefaultSize,
-            resolution_selectorChoices,
-            0,
-        )
-        bSizer2.Add(self.resolution_selector, 0, wx.ALL, 5)
+        # Create a variable to contain all the checkboxes so we can interact with them later
+        self.resolution_choices = []
+        # Create the checkboxes and store them in the variable
+        for choice in self.resolution_selectorChoices:
+            check_box = wx.CheckBox(self, wx.ID_ANY, choice, wx.DefaultPosition, wx.DefaultSize, 0)
+            if choice in resolutions:
+                check_box.SetValue(1)
+            self.resolution_checkbox_container.Add(check_box, 0, wx.ALL, 5)
+            self.resolution_choices.append(check_box)
+        
+        self.resolution_checkbox_container.AddSpacer(wx.EXPAND)
 
+
+        self.select_all = wx.Button(
+            self, wx.ID_ANY, "Select All", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.select_all.Bind(wx.EVT_BUTTON, self.select_all_resolutions)
+        self.resolution_checkbox_container.Add(self.select_all, 0, wx.ALL, 5)
+
+        self.deselect_all = wx.Button(
+            self, wx.ID_ANY, "Deselect All", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.deselect_all.Bind(wx.EVT_BUTTON, self.deselect_all_resolutions)
+        self.resolution_checkbox_container.Add(self.deselect_all, 0, wx.ALL, 5)
+
+        bSizer2.Add(self.resolution_checkbox_container, 1, wx.EXPAND, 5)
         gSizer1.Add(bSizer2, 1, wx.EXPAND, 5)
 
         bSizer3 = wx.BoxSizer(wx.VERTICAL)
@@ -245,27 +261,47 @@ class MyFrame(wx.Frame):
             pass
         dialog.Destroy()
 
+
+    def select_all_resolutions(self, event):
+        # Selects all of the resolution checkboxes
+        for choice in self.resolution_choices:
+            choice.SetValue(1)
+
+    def deselect_all_resolutions(self, event):
+        # Unchecks all of the resolution checkboxes
+        for choice in self.resolution_choices:
+            choice.SetValue(0)
+
     def run(self, event):
         """
         This function is called when "Get Wallpapers" is clicked. We validate the form, and it valid, we pass it to the collector to do it's job.
         """
+
+        def get_requested_resolutions():
+            requested_resolutions = []
+            for choice in self.resolution_choices:
+                if choice.GetValue() == 1:
+                    requested_resolutions.append(choice.GetLabel())
+            return requested_resolutions
+
         required_form_values = [
             self.sub_selector.GetValue(),
             self.sort_selector.GetValue(),
-            self.resolution_selector.GetValue(),
+            get_requested_resolutions(),
             self.wallpapers_requested.GetValue(),
         ]
 
         req = int(self.wallpapers_requested.GetValue())
 
         # If a required field is left incomplete, don't collect anything
-        if any(val == "" for val in required_form_values):
+        if any(not val for val in required_form_values):
+            print("You have to select a resolution or something idk you're just missing something dude")
             return False
-
+        
         form = {
             "subreddit": required_form_values[0],
             "sort-by": required_form_values[1],
-            "resolution": required_form_values[2],
+            "resolutions": required_form_values[2],
             "wallpapers_requested": int(required_form_values[3]),
             "check_for_duplicates": self.duplicate_checkbox.GetValue(),
         }
