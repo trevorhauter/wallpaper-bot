@@ -160,7 +160,6 @@ class MyFrame ( wx.Frame ):
     """
 
     def dirBrowser(self, event):
-        print("Here")
         dialog = wx.DirDialog (None, message = 'Pick a directory.' )
         if dialog.ShowModal() == wx.ID_OK:
             print(f"Default directory has been changed to {dialog.GetPath()}")

@@ -44,13 +44,16 @@ class user_profile():
             if file_path:
                 # If form data is already in the existing settings, include that when writing the new form, otherwise just save the form
                 if 'subreddit' in settings:
-                    write_settings({**{'file_path': file_path}, **settings})
+                    settings["file_path"] = file_path
+                    write_settings(settings)
                 else:
                     write_settings({'file_path': file_path})
             else:
                 # If file_path is already in the existing settings, include that when writing the new form, otherwise just save the form
                 if 'file_path' in settings:
-                    write_settings({**{'file_path': settings['file_path']}, **form})
+                    file_path = settings["file_path"]
+                    form["file_path"] = file_path
+                    write_settings(form)
                 else:
                     write_settings(form)
         else:
