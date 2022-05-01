@@ -5,7 +5,7 @@ from PIL import ImageFile
 from pathlib import Path
 
 
-class redditCollector():
+class redditCollector:
     def __init__(self, form, file_path):
         """
         Parameters:
@@ -19,16 +19,16 @@ class redditCollector():
         self.last_post_id = None
 
         self.file_path = file_path
-        self.wallpapers_requested = form['wallpapers_requested']
-        self.resolution = self.parse_resolution(form['resolution'])
-        self.subreddit = form['subreddit'].lower()
-        self.sort_by = form['sort-by'].lower()
-        self.check_for_duplicates = form['check_for_duplicates']
+        self.wallpapers_requested = form["wallpapers_requested"]
+        self.resolution = self.parse_resolution(form["resolution"])
+        self.subreddit = form["subreddit"].lower()
+        self.sort_by = form["sort-by"].lower()
+        self.check_for_duplicates = form["check_for_duplicates"]
 
         # If we already have a record of the retrieved wallpapers, load it, otherwise create a new one so if the user wants to avoid
         # duplicates we can
-        if Path('retrieved_wallpapers.json').is_file():
-            with open('retrieved_wallpapers.json') as retrieved_wallpapers:
+        if Path("retrieved_wallpapers.json").is_file():
+            with open("retrieved_wallpapers.json") as retrieved_wallpapers:
                 self.retrieved_wallpapers = json.load(retrieved_wallpapers)
         else:
             self.retrieved_wallpapers = []
@@ -37,8 +37,8 @@ class redditCollector():
         """
         Updates our local json object so we can keep track of what wallpapers the user has already downloaded
         """
-        with open('retrieved_wallpapers.json', 'w+') as retrieved_wallpapers:
-                retrieved_wallpapers.write(json.dumps(self.retrieved_wallpapers))
+        with open("retrieved_wallpapers.json", "w+") as retrieved_wallpapers:
+            retrieved_wallpapers.write(json.dumps(self.retrieved_wallpapers))
 
     def parse_resolution(self, res):
         """
@@ -52,7 +52,7 @@ class redditCollector():
             list
         """
 
-        return [int(res[:res.find('x')]), int(res[res.find('x') + 1:])]
+        return [int(res[: res.find("x")]), int(res[res.find("x") + 1 :])]
 
     def login(self):
         """
@@ -62,33 +62,37 @@ class redditCollector():
             headers (dict): A dictionary containing out user agent and access token
         """
         # Get the credentials from base.json (if you don't have the file, you won't be able to use this)
-        with open('based.json') as json_file:
+        with open("based.json") as json_file:
             credentials = json.load(json_file)
 
         # Information that we get from reddit. IMPORTANT TO KEEP PRIVATE
-        CLIENT_ID = credentials['CLIENT_ID']
-        SECRET = credentials['SECRET']    
+        CLIENT_ID = credentials["CLIENT_ID"]
+        SECRET = credentials["SECRET"]
 
         # Get authorization token
         auth = requests.auth.HTTPBasicAuth(CLIENT_ID, SECRET)
 
         data = {
-            'grant_type': 'password',
-            'username': credentials['USERNAME'],
-            'password': credentials['PASSWORD']
+            "grant_type": "password",
+            "username": credentials["USERNAME"],
+            "password": credentials["PASSWORD"],
         }
 
         # let api know what version we're using
-        headers = {'User-Agent': 'MyAPI/0.0.1'}
+        headers = {"User-Agent": "MyAPI/0.0.1"}
 
         # Gets access_token
-        res = requests.post('https://www.reddit.com/api/v1/access_token',
-                            auth=auth, data=data, headers=headers)
+        res = requests.post(
+            "https://www.reddit.com/api/v1/access_token",
+            auth=auth,
+            data=data,
+            headers=headers,
+        )
 
-        TOKEN = res.json()['access_token']
+        TOKEN = res.json()["access_token"]
 
         # returns updated headers dict with access token
-        return {**headers, **{'Authorization': f'bearer {TOKEN}'}}
+        return {**headers, **{"Authorization": f"bearer {TOKEN}"}}
 
     def valid_resolution(self, url):
         """
@@ -105,7 +109,8 @@ class redditCollector():
         # get file size *and* image size (None if not known)
         with urllib.request.urlopen(url) as file:
             size = file.headers.get("content-length")
-            if size: size = int(size)
+            if size:
+                size = int(size)
             p = ImageFile.Parser()
             data = file.read(1024)
             if not data:
@@ -128,7 +133,7 @@ class redditCollector():
 
     def download_posts(self, last_post_id=None):
         """
-        Requests 100 posts at a time. If a post contains an image, we check the resolution. If the image has the requested resolution, we download it. 
+        Requests 100 posts at a time. If a post contains an image, we check the resolution. If the image has the requested resolution, we download it.
         For each image that does match our requirements, we add that to the success count.
 
         Parameters:
@@ -141,14 +146,15 @@ class redditCollector():
         # Make a request to get the posts from the subreddit
         if last_post_id:
             res = requests.get(
-                f'https://oauth.reddit.com/r/{self.subreddit}/{self.sort_by}', 
-                headers=self.headers, 
-                params={'after': last_post_id, 'limit': 100}
+                f"https://oauth.reddit.com/r/{self.subreddit}/{self.sort_by}",
+                headers=self.headers,
+                params={"after": last_post_id, "limit": 100},
             )
         else:
             res = requests.get(
-                f'https://oauth.reddit.com/r/{self.subreddit}/{self.sort_by}', 
-                headers=self.headers, params={'limit': 100}
+                f"https://oauth.reddit.com/r/{self.subreddit}/{self.sort_by}",
+                headers=self.headers,
+                params={"limit": 100},
             )
 
         # Read the json response
@@ -171,26 +177,29 @@ class redditCollector():
             }
         } 
         """
-        for idx in range(len(posts['data']['children'])):
+        for idx in range(len(posts["data"]["children"])):
             # "kind" is just a variable used to make the post id. In order to make a proper post id, you need this attribute and the ID, and then
             # you can reference that in future queries so you know where you left off on.
-            kind = posts['data']['children'][idx]['kind']
-            post = posts['data']['children'][idx]['data']
-            id = post['id']
-            image_url = post['url']
+            kind = posts["data"]["children"][idx]["kind"]
+            post = posts["data"]["children"][idx]["data"]
+            id = post["id"]
+            image_url = post["url"]
 
-            extensions = ['.png', '.jpg', '.jpeg']
+            extensions = [".png", ".jpg", ".jpeg"]
 
             # If the url doesn't contain an image extension
             if all(ex not in image_url for ex in extensions):
                 continue
-            
+
             # Gets the image name
-            image_name = image_url[image_url.rfind('/') + 1:]
-            
+            image_name = image_url[image_url.rfind("/") + 1 :]
+
             self.last_post_id = kind + id
 
-            if self.valid_resolution(image_url) and self.downloaded < self.wallpapers_requested:
+            if (
+                self.valid_resolution(image_url)
+                and self.downloaded < self.wallpapers_requested
+            ):
                 if self.check_for_duplicates:
                     # If we are checking for duplicates, and this image is already in our retrieved wallpapers record, skip
                     if image_name in self.retrieved_wallpapers:
@@ -198,10 +207,14 @@ class redditCollector():
 
                 # download and name image
                 if self.file_path:
-                    if '/' in self.file_path:
-                        urllib.request.urlretrieve(image_url, self.file_path + '/' + image_name)
+                    if "/" in self.file_path:
+                        urllib.request.urlretrieve(
+                            image_url, self.file_path + "/" + image_name
+                        )
                     else:
-                        urllib.request.urlretrieve(image_url, self.file_path + '\\' + image_name)
+                        urllib.request.urlretrieve(
+                            image_url, self.file_path + "\\" + image_name
+                        )
                 else:
                     urllib.request.urlretrieve(image_url, image_name)
                 # Now that we've downloaded the image, update the record
@@ -226,7 +239,7 @@ class redditCollector():
             print(f"Downloading {self.wallpapers_requested} images to {self.file_path}")
             yield self.download_posts()
             self.RETRIES += 1
-        
+
         self.updated_retrieved_wallpapers()
 
         print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")
