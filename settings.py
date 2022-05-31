@@ -77,11 +77,10 @@ class user_profile:
         else:
             self.write_subreddits(default_subreddits)
             return default_subreddits
-        
 
     def write_subreddits(self, subreddits):
         """
         Rewrites the subreddits list with the list provided
         """
         with open("subreddits.json", "w+") as subs_file:
-                subs_file.write(json.dumps(subreddits))
+            subs_file.write(json.dumps(subreddits))

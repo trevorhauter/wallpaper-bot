@@ -60,7 +60,9 @@ class MyFrame(wx.Frame):
         else:
             self.file_path = ""
 
-        self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        self.m_panel1 = wx.Panel(
+            self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL
+        )
 
         gSizer1 = wx.GridSizer(0, 2, 0, 0)
 
@@ -89,7 +91,12 @@ class MyFrame(wx.Frame):
         bSizer1.Add(self.sub_selector, 0, wx.ALL, 5)
 
         self.amount_label = wx.StaticText(
-            self.m_panel1, wx.ID_ANY, "# Of Wallpapers", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "# Of Wallpapers",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.amount_label.Wrap(-1)
 
@@ -106,7 +113,12 @@ class MyFrame(wx.Frame):
         bSizer1.Add(self.wallpapers_requested, 0, wx.ALL, 5)
 
         self.edit_subreddits_button = wx.Button(
-            self.m_panel1, wx.ID_ANY, "Edit Subreddits", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "Edit Subreddits",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.edit_subreddits_button.Bind(wx.EVT_BUTTON, self.switch_to_edit_subreddits)
         bSizer1.Add(self.edit_subreddits_button, 0, wx.ALL, 5)
@@ -136,14 +148,19 @@ class MyFrame(wx.Frame):
         bSizer2.Add(self.sort_selector, 0, wx.ALL, 5)
 
         self.resolution_label = wx.StaticText(
-            self.m_panel1, wx.ID_ANY, "Resolution", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "Resolution",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.resolution_label.Wrap(-1)
 
         bSizer2.Add(self.resolution_label, 0, wx.ALL, 5)
 
         # Create a container to contain all of the resolution choices
-        self.resolution_checkbox_container = wx.GridSizer( 0, 2, 0, 0 )
+        self.resolution_checkbox_container = wx.GridSizer(0, 2, 0, 0)
         self.resolution_selectorChoices = [
             "1280x720",
             "1366x768",
@@ -157,23 +174,34 @@ class MyFrame(wx.Frame):
         self.resolution_choices = []
         # Create the checkboxes and store them in the variable
         for choice in self.resolution_selectorChoices:
-            check_box = wx.CheckBox(self.m_panel1, wx.ID_ANY, choice, wx.DefaultPosition, wx.DefaultSize, 0)
+            check_box = wx.CheckBox(
+                self.m_panel1, wx.ID_ANY, choice, wx.DefaultPosition, wx.DefaultSize, 0
+            )
             if choice in resolutions:
                 check_box.SetValue(1)
             self.resolution_checkbox_container.Add(check_box, 0, wx.ALL, 5)
             self.resolution_choices.append(check_box)
-        
+
         self.resolution_checkbox_container.AddSpacer(wx.EXPAND)
 
-
         self.select_all = wx.Button(
-            self.m_panel1, wx.ID_ANY, "Select All", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "Select All",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.select_all.Bind(wx.EVT_BUTTON, self.select_all_resolutions)
         self.resolution_checkbox_container.Add(self.select_all, 0, wx.ALL, 5)
 
         self.deselect_all = wx.Button(
-            self.m_panel1, wx.ID_ANY, "Deselect All", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "Deselect All",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.deselect_all.Bind(wx.EVT_BUTTON, self.deselect_all_resolutions)
         self.resolution_checkbox_container.Add(self.deselect_all, 0, wx.ALL, 5)
@@ -198,7 +226,12 @@ class MyFrame(wx.Frame):
         bSizer3.Add(self.dir_selector_label, 0, wx.ALL, 5)
 
         self.directory_selector = wx.Button(
-            self.m_panel1, wx.ID_ANY, "Select Directory", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "Select Directory",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.directory_selector.Bind(wx.EVT_BUTTON, self.dirBrowser)
         bSizer3.Add(self.directory_selector, 0, wx.ALL, 5)
@@ -231,7 +264,12 @@ class MyFrame(wx.Frame):
         bSizer4.Add((0, 0), 1, wx.EXPAND, 5)
 
         self.run_button = wx.Button(
-            self.m_panel1, wx.ID_ANY, "Get Wallpapers", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1,
+            wx.ID_ANY,
+            "Get Wallpapers",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.run_button.Bind(wx.EVT_BUTTON, self.run)
         bSizer4.Add(self.run_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
@@ -249,11 +287,13 @@ class MyFrame(wx.Frame):
         ----- START OF EDIT SUBREDDITS PANEL -----
         """
 
-        self.m_panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        self.m_panel2 = wx.Panel(
+            self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL
+        )
         bSizer5 = wx.BoxSizer(wx.VERTICAL)
         gSizer2 = wx.GridSizer(0, 2, 0, 0)
 
-        self.subreddit_listctrl = wx.ListCtrl(self.m_panel2, style = wx.LC_REPORT)
+        self.subreddit_listctrl = wx.ListCtrl(self.m_panel2, style=wx.LC_REPORT)
         self.subreddit_listctrl.InsertColumn(0, "-- SUBREDDITS --")
         self.subreddit_listctrl.SetColumnWidth(0, 150)
 
@@ -265,16 +305,30 @@ class MyFrame(wx.Frame):
         bSizer6 = wx.BoxSizer(wx.VERTICAL)
 
         self.add_subreddit_button = wx.Button(
-            self.m_panel2, wx.ID_ANY, "Add a subreddit", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel2,
+            wx.ID_ANY,
+            "Add a subreddit",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.add_subreddit_button.Bind(wx.EVT_BUTTON, self.add_subreddit)
-        bSizer6.Add(self.add_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+        bSizer6.Add(
+            self.add_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5
+        )
 
         self.remove_subreddit_button = wx.Button(
-            self.m_panel2, wx.ID_ANY, "Remove subreddits", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel2,
+            wx.ID_ANY,
+            "Remove subreddits",
+            wx.DefaultPosition,
+            wx.DefaultSize,
+            0,
         )
         self.remove_subreddit_button.Bind(wx.EVT_BUTTON, self.remove_subreddit)
-        bSizer6.Add(self.remove_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+        bSizer6.Add(
+            self.remove_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5
+        )
 
         self.back_to_home_button = wx.Button(
             self.m_panel2, wx.ID_ANY, "Back", wx.DefaultPosition, wx.DefaultSize, 0
@@ -315,7 +369,7 @@ class MyFrame(wx.Frame):
 
         self.SetSize(600, 501)
         self.SetSize(600, 500)
-        
+
     def switch_to_edit_subreddits(self, event):
         """
         Switches the panel to a panel used to add/remove subreddits from the dropdown
@@ -325,7 +379,6 @@ class MyFrame(wx.Frame):
 
         self.SetSize(400, 251)
         self.SetSize(400, 250)
-
 
     def dirBrowser(self, event):
         """
@@ -339,7 +392,6 @@ class MyFrame(wx.Frame):
         else:
             pass
         dialog.Destroy()
-
 
     def select_all_resolutions(self, event):
         """
@@ -359,7 +411,7 @@ class MyFrame(wx.Frame):
         """
         Adds a subreddit using a text filed
         """
-        dlg = wx.TextEntryDialog(frame, 'Enter a subreddit name','Subreddit')
+        dlg = wx.TextEntryDialog(frame, "Enter a subreddit name", "Subreddit")
 
         if dlg.ShowModal() == wx.ID_OK:
             existing_subs = profile.read_subreddits()
@@ -386,12 +438,19 @@ class MyFrame(wx.Frame):
         if subreddits_to_remove:
             existing_subs = profile.read_subreddits()
 
-            new_subreddit_list = [sub for sub in existing_subs if sub not in subreddits_to_remove]
+            new_subreddit_list = [
+                sub for sub in existing_subs if sub not in subreddits_to_remove
+            ]
             self.update_subreddit_selectors(new_subreddit_list)
             profile.write_subreddits(new_subreddit_list)
         else:
-            box = wx.MessageDialog(None,'In order to remove subreddits, please select 1 or more subreddits from the list', 'Invalid selection', wx.OK)
-            answer=box.ShowModal()
+            box = wx.MessageDialog(
+                None,
+                "In order to remove subreddits, please select 1 or more subreddits from the list",
+                "Invalid selection",
+                wx.OK,
+            )
+            answer = box.ShowModal()
             box.Destroy()
 
     def update_subreddit_selectors(self, subreddits):
@@ -410,7 +469,6 @@ class MyFrame(wx.Frame):
 
         if self.sub_selector_value and self.sub_selector_value in subreddits:
             self.sub_selector.SetValue(self.sub_selector_value)
-
 
     def run(self, event):
         """
@@ -435,9 +493,11 @@ class MyFrame(wx.Frame):
 
         # If a required field is left incomplete, don't collect anything
         if any(not val for val in required_form_values):
-            print("You have to select a resolution or something idk you're just missing something dude")
+            print(
+                "You have to select a resolution or something idk you're just missing something dude"
+            )
             return False
-        
+
         form = {
             "subreddit": required_form_values[0],
             "sort-by": required_form_values[1],
@@ -467,10 +527,14 @@ class MyFrame(wx.Frame):
                 for count in group:
                     progress_bar.Update(count, "Downloading wallpaper #" + str(count))
         except json.decoder.JSONDecodeError:
-            box = wx.MessageDialog(None,f'An error occurred during collection. Are you sure "{form["subreddit"]}" is a valid subreddit?', 'ERROR', wx.OK)
-            answer=box.ShowModal()
+            box = wx.MessageDialog(
+                None,
+                f'An error occurred during collection. Are you sure "{form["subreddit"]}" is a valid subreddit?',
+                "ERROR",
+                wx.OK,
+            )
+            answer = box.ShowModal()
             box.Destroy()
-
 
         progress_bar.Destroy()
 

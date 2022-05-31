@@ -2,6 +2,7 @@ __pycache__/
 build/
 geckodriver.log
 based.json
+subreddits.json
 settings.json
 retrieved_wallpapers.json
 main.spec

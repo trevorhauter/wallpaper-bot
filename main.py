@@ -20,8 +20,10 @@ class redditCollector:
 
         self.file_path = file_path
         self.wallpapers_requested = form["wallpapers_requested"]
-        self.MAX_RETRIES = int((self.wallpapers_requested * (10 ** 3)) / 100)
-        self.resolutions = [self.parse_resolution(resolution) for resolution in form["resolutions"]]
+        self.MAX_RETRIES = int((self.wallpapers_requested * (10**3)) / 100)
+        self.resolutions = [
+            self.parse_resolution(resolution) for resolution in form["resolutions"]
+        ]
         self.subreddit = form["subreddit"].lower()
         self.sort_by = form["sort-by"].lower()
         self.check_for_duplicates = form["check_for_duplicates"]
@@ -198,10 +200,7 @@ class redditCollector:
 
             valid_resolution, resolution = self.is_valid_resolution(image_url)
 
-            if (
-                valid_resolution
-                and self.downloaded < self.wallpapers_requested
-            ):
+            if valid_resolution and self.downloaded < self.wallpapers_requested:
                 if self.check_for_duplicates:
                     # If we are checking for duplicates, and this image is already in our retrieved wallpapers record, skip
                     if image_name in self.retrieved_wallpapers:
@@ -228,11 +227,14 @@ class redditCollector:
                 if self.downloaded == self.wallpapers_requested:
                     self.success = True
                     return
-            elif not valid_resolution and self.downloaded < self.wallpapers_requested and resolution is not None:
+            elif (
+                not valid_resolution
+                and self.downloaded < self.wallpapers_requested
+                and resolution is not None
+            ):
                 # This elif statement is so we can just properly log if a resolution is invalid while we're still trying to download
                 # wallpapers
                 print(f"Invalid image size {resolution}... skipping...")
-            
 
     def collect_wallpapers(self):
         """
@@ -253,4 +255,6 @@ class redditCollector:
         if self.success:
             print(f"FINISHED! Successfully downloaded {self.wallpapers_requested}")
         else:
-            print(f"FINISHED! Failed to download desired amount of wallpapers. {self.downloaded} wallpapers were retrieved")
+            print(
+                f"FINISHED! Failed to download desired amount of wallpapers. {self.downloaded} wallpapers were retrieved"
+            )
