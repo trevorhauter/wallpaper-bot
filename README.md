@@ -18,3 +18,39 @@ Once you have all of the stuff set up from the article, take the credentials cre
   "PASSWORD": PASSWORD
 }
 ```
+
+### Creating an executable for windows
+
+In order to create an executable on windows, you'll want to have python3.8+ installed as well as pip. These commands might be sort of wrong because I'm doing this from memory. If there is anything that needs to be updated let me know and I'll update them.
+
+Install virtualenv
+```
+pip install virtualenv
+```
+
+Create a virtualenv named "venv" in the same directory as the project
+```
+virtualenv venv
+```
+
+Activate the virtualenv
+```
+.venv\Scripts\activate.bat
+```
+
+Install the libraries
+```
+pip freeze > requirements.txt.
+```
+
+Install pyinstaller 
+```
+pip install pyinstaller
+```
+
+Create an executable of the gui.py
+```
+pyinstaller gui.py --onefile
+```
+
+Now you have an executable! You just need to include the based.json file with your credentials and you're good to go
