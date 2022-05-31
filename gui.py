@@ -40,8 +40,8 @@ class MyFrame(wx.Frame):
 
         # Get the settings
         settings = profile.settings
-        # Set the values that will be displayed in our fields
 
+        # Set the values that will be displayed in our fields
         if settings and "subreddit" in settings:
             sub_selector_value = settings["subreddit"]
             sort_selector_value = settings["sort-by"]
@@ -60,13 +60,14 @@ class MyFrame(wx.Frame):
         else:
             self.file_path = ""
 
+        self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 
         gSizer1 = wx.GridSizer(0, 2, 0, 0)
 
         bSizer1 = wx.BoxSizer(wx.VERTICAL)
 
         self.sub_selector = wx.StaticText(
-            self, wx.ID_ANY, "Subreddit", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Subreddit", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.sub_selector.Wrap(-1)
 
@@ -84,7 +85,7 @@ class MyFrame(wx.Frame):
         sub_selectorChoices = subreddit_choices
         # Sets the subreddit selector to the users last value if any
         self.sub_selector = wx.ComboBox(
-            self,
+            self.m_panel1,
             wx.ID_ANY,
             sub_selector_value,
             wx.DefaultPosition,
@@ -95,14 +96,14 @@ class MyFrame(wx.Frame):
         bSizer1.Add(self.sub_selector, 0, wx.ALL, 5)
 
         self.amount_label = wx.StaticText(
-            self, wx.ID_ANY, "# Of Wallpapers", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "# Of Wallpapers", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.amount_label.Wrap(-1)
 
         bSizer1.Add(self.amount_label, 0, wx.ALL, 5)
         # Sets the wallpaper requested textctrl to the users last value if any
         self.wallpapers_requested = wx.TextCtrl(
-            self,
+            self.m_panel1,
             wx.ID_ANY,
             wallpapers_requested_value,
             wx.DefaultPosition,
@@ -111,12 +112,18 @@ class MyFrame(wx.Frame):
         )
         bSizer1.Add(self.wallpapers_requested, 0, wx.ALL, 5)
 
+        self.edit_subreddits_button = wx.Button(
+            self.m_panel1, wx.ID_ANY, "Edit Subreddits", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.edit_subreddits_button.Bind(wx.EVT_BUTTON, self.switch_to_edit_subreddits)
+        bSizer1.Add(self.edit_subreddits_button, 0, wx.ALL, 5)
+
         gSizer1.Add(bSizer1, 1, wx.EXPAND, 5)
 
         bSizer2 = wx.BoxSizer(wx.VERTICAL)
 
         self.sort_label = wx.StaticText(
-            self, wx.ID_ANY, "Sort By", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Sort By", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.sort_label.Wrap(-1)
 
@@ -125,7 +132,7 @@ class MyFrame(wx.Frame):
         sort_selectorChoices = ["New", "Hot", "Random", "Rising"]
         # Sets the sort selector to the users last value if any
         self.sort_selector = wx.ComboBox(
-            self,
+            self.m_panel1,
             wx.ID_ANY,
             sort_selector_value,
             wx.DefaultPosition,
@@ -136,7 +143,7 @@ class MyFrame(wx.Frame):
         bSizer2.Add(self.sort_selector, 0, wx.ALL, 5)
 
         self.resolution_label = wx.StaticText(
-            self, wx.ID_ANY, "Resolution", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Resolution", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.resolution_label.Wrap(-1)
 
@@ -157,7 +164,7 @@ class MyFrame(wx.Frame):
         self.resolution_choices = []
         # Create the checkboxes and store them in the variable
         for choice in self.resolution_selectorChoices:
-            check_box = wx.CheckBox(self, wx.ID_ANY, choice, wx.DefaultPosition, wx.DefaultSize, 0)
+            check_box = wx.CheckBox(self.m_panel1, wx.ID_ANY, choice, wx.DefaultPosition, wx.DefaultSize, 0)
             if choice in resolutions:
                 check_box.SetValue(1)
             self.resolution_checkbox_container.Add(check_box, 0, wx.ALL, 5)
@@ -167,13 +174,13 @@ class MyFrame(wx.Frame):
 
 
         self.select_all = wx.Button(
-            self, wx.ID_ANY, "Select All", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Select All", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.select_all.Bind(wx.EVT_BUTTON, self.select_all_resolutions)
         self.resolution_checkbox_container.Add(self.select_all, 0, wx.ALL, 5)
 
         self.deselect_all = wx.Button(
-            self, wx.ID_ANY, "Deselect All", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Deselect All", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.deselect_all.Bind(wx.EVT_BUTTON, self.deselect_all_resolutions)
         self.resolution_checkbox_container.Add(self.deselect_all, 0, wx.ALL, 5)
@@ -186,7 +193,7 @@ class MyFrame(wx.Frame):
         bSizer3.Add((0, 0), 1, wx.EXPAND, 5)
 
         self.dir_selector_label = wx.StaticText(
-            self,
+            self.m_panel1,
             wx.ID_ANY,
             "Wallpaper Directory",
             wx.DefaultPosition,
@@ -198,13 +205,13 @@ class MyFrame(wx.Frame):
         bSizer3.Add(self.dir_selector_label, 0, wx.ALL, 5)
 
         self.directory_selector = wx.Button(
-            self, wx.ID_ANY, "Select Directory", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Select Directory", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.directory_selector.Bind(wx.EVT_BUTTON, self.dirBrowser)
         bSizer3.Add(self.directory_selector, 0, wx.ALL, 5)
 
         self.duplicate_label = wx.StaticText(
-            self,
+            self.m_panel1,
             wx.ID_ANY,
             "Check For Duplicates",
             wx.DefaultPosition,
@@ -216,7 +223,7 @@ class MyFrame(wx.Frame):
         bSizer3.Add(self.duplicate_label, 0, wx.ALL, 5)
 
         self.duplicate_checkbox = wx.CheckBox(
-            self, wx.ID_ANY, "", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "", wx.DefaultPosition, wx.DefaultSize, 0
         )
         # Sets the duplicate checkbox to the users last value if any
         self.duplicate_checkbox.SetValue(check_duplicates_value)
@@ -231,7 +238,7 @@ class MyFrame(wx.Frame):
         bSizer4.Add((0, 0), 1, wx.EXPAND, 5)
 
         self.run_button = wx.Button(
-            self, wx.ID_ANY, "Get Wallpapers", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel1, wx.ID_ANY, "Get Wallpapers", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.run_button.Bind(wx.EVT_BUTTON, self.run)
         bSizer4.Add(self.run_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
@@ -239,6 +246,61 @@ class MyFrame(wx.Frame):
         bSizer4.Add((0, 0), 1, wx.EXPAND, 5)
 
         gSizer1.Add(bSizer4, 1, wx.EXPAND, 5)
+
+        self.m_panel1.SetSizer(gSizer1)
+        self.m_panel1.Layout()
+        gSizer1.Fit(self.m_panel1)
+
+        """
+        ----- END OF MAIN PANEL -----
+        ----- START OF EDIT SUBREDDITS PANEL -----
+        """
+
+        self.m_panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+        bSizer5 = wx.BoxSizer(wx.VERTICAL)
+        gSizer2 = wx.GridSizer(0, 2, 0, 0)
+
+        self.subreddit_listctrl = wx.ListCtrl(self.m_panel2, style = wx.LC_REPORT)
+        self.subreddit_listctrl.InsertColumn(0, "SUBREDDITS")
+        self.subreddit_listctrl.SetColumnWidth(0, 150)
+
+        for i in range(50):
+            self.subreddit_listctrl.InsertItem(i, "test")
+
+        gSizer2.Add(self.subreddit_listctrl, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+        bSizer6 = wx.BoxSizer(wx.VERTICAL)
+
+        self.add_subreddit_button = wx.Button(
+            self.m_panel2, wx.ID_ANY, "Add a subreddit", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.add_subreddit_button.Bind(wx.EVT_BUTTON, self.add_subreddit)
+        bSizer6.Add(self.add_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+        self.remove_subreddit_button = wx.Button(
+            self.m_panel2, wx.ID_ANY, "Remove a subreddit", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.remove_subreddit_button.Bind(wx.EVT_BUTTON, self.remove_subreddit)
+        bSizer6.Add(self.remove_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+        self.back_to_home_button = wx.Button(
+            self.m_panel2, wx.ID_ANY, "Back", wx.DefaultPosition, wx.DefaultSize, 0
+        )
+        self.back_to_home_button.Bind(wx.EVT_BUTTON, self.back_to_home)
+        bSizer6.Add(self.back_to_home_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+        # bSizer5.Add(gSizer2, 1, 5)
+        gSizer2.Add(bSizer6, 1, wx.EXPAND, 5)
+        bSizer5.Add(gSizer2, 0, wx.EXPAND, 5)
+
+        self.m_panel2.SetSizer(bSizer5)
+        self.m_panel2.Layout()
+        gSizer2.Fit(self.m_panel2)
+        self.m_panel2.Hide()
+
+        """
+        ----- END OF EDIT SUBREDDITS PANEL -----
+        """
 
         self.SetSizer(gSizer1)
         self.Layout()
@@ -251,7 +313,31 @@ class MyFrame(wx.Frame):
     ---------------------------
     """
 
+    def back_to_home(self, event):
+        """
+        Switches the panel back to the main panel
+        """
+        self.m_panel2.Hide()
+        self.m_panel1.Show()
+
+        self.SetSize(600, 501)
+        self.SetSize(600, 500)
+        
+    def switch_to_edit_subreddits(self, event):
+        """
+        Switches the panel to a panel used to add/remove subreddits from the dropdown
+        """
+        self.m_panel1.Hide()
+        self.m_panel2.Show()
+
+        self.SetSize(400, 251)
+        self.SetSize(400, 250)
+
+
     def dirBrowser(self, event):
+        """
+        Opens up a file explorer that the user can use to select the folder they would like wallpapers to be saved in
+        """
         dialog = wx.DirDialog(None, message="Pick a directory.")
         if dialog.ShowModal() == wx.ID_OK:
             print(f"Default directory has been changed to {dialog.GetPath()}")
@@ -263,14 +349,32 @@ class MyFrame(wx.Frame):
 
 
     def select_all_resolutions(self, event):
-        # Selects all of the resolution checkboxes
+        """
+        Selects all of the resolution checkboxes
+        """
         for choice in self.resolution_choices:
             choice.SetValue(1)
 
     def deselect_all_resolutions(self, event):
-        # Unchecks all of the resolution checkboxes
+        """
+        Unchecks all of the resolution checkboxes
+        """
         for choice in self.resolution_choices:
             choice.SetValue(0)
+
+    def add_subreddit(self, event):
+        dlg = wx.TextEntryDialog(frame, 'Enter some text','Text Entry')
+        dlg.SetValue("Default")
+        if dlg.ShowModal() == wx.ID_OK:
+            print('You entered: %s\n' % dlg.GetValue())
+        dlg.Destroy()
+
+    def remove_subreddit(self, event):
+        dlg = wx.TextEntryDialog(frame, 'Enter some text','Text Entry')
+        dlg.SetValue("Default")
+        if dlg.ShowModal() == wx.ID_OK:
+            print('You entered: %s\n' % dlg.GetValue())
+        dlg.Destroy()
 
     def run(self, event):
         """
