@@ -64,3 +64,24 @@ class user_profile:
                 write_settings({"file_path": file_path})
             else:
                 write_settings(form)
+
+    def read_subreddits(self):
+        """
+        Returns the current list of subreddits
+        """
+        default_subreddits = ["Wallpapers", "Art"]
+
+        if Path("subreddits.json").is_file():
+            with open("subreddits.json", "r") as subs_file:
+                return json.load(subs_file)
+        else:
+            self.write_subreddits(default_subreddits)
+            return default_subreddits
+        
+
+    def write_subreddits(self, subreddits):
+        """
+        Rewrites the subreddits list with the list provided
+        """
+        with open("subreddits.json", "w+") as subs_file:
+                subs_file.write(json.dumps(subreddits))

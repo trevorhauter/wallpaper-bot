@@ -43,13 +43,13 @@ class MyFrame(wx.Frame):
 
         # Set the values that will be displayed in our fields
         if settings and "subreddit" in settings:
-            sub_selector_value = settings["subreddit"]
+            self.sub_selector_value = settings["subreddit"]
             sort_selector_value = settings["sort-by"]
             wallpapers_requested_value = str(settings["wallpapers_requested"])
             resolutions = settings["resolutions"]
             check_duplicates_value = settings["check_for_duplicates"]
         else:
-            sub_selector_value = ""
+            self.sub_selector_value = ""
             sort_selector_value = ""
             wallpapers_requested_value = ""
             resolutions = ""
@@ -73,21 +73,14 @@ class MyFrame(wx.Frame):
 
         bSizer1.Add(self.sub_selector, 0, wx.ALL, 5)
 
-        subreddit_choices = ["Wallpapers", "Art"]
-        # Check to see if the user added their own wallpapers with a json file
-        if Path("subreddits.json").is_file():
-            with open("subreddits.json", "r") as subreddits_file:
-                subreddits = json.load(subreddits_file)
-            if subreddits:
-                subreddit_choices = list(set(subreddits + subreddit_choices))
-                print(subreddit_choices)
-
-        sub_selectorChoices = subreddit_choices
+        # Get all the subreddits from the local json file
+        self.subreddit_choices = profile.read_subreddits()
+        sub_selectorChoices = self.subreddit_choices
         # Sets the subreddit selector to the users last value if any
         self.sub_selector = wx.ComboBox(
             self.m_panel1,
             wx.ID_ANY,
-            sub_selector_value,
+            self.sub_selector_value,
             wx.DefaultPosition,
             wx.DefaultSize,
             sub_selectorChoices,
@@ -261,11 +254,11 @@ class MyFrame(wx.Frame):
         gSizer2 = wx.GridSizer(0, 2, 0, 0)
 
         self.subreddit_listctrl = wx.ListCtrl(self.m_panel2, style = wx.LC_REPORT)
-        self.subreddit_listctrl.InsertColumn(0, "SUBREDDITS")
+        self.subreddit_listctrl.InsertColumn(0, "-- SUBREDDITS --")
         self.subreddit_listctrl.SetColumnWidth(0, 150)
 
-        for i in range(50):
-            self.subreddit_listctrl.InsertItem(i, "test")
+        for idx, sub in enumerate(self.subreddit_choices):
+            self.subreddit_listctrl.InsertItem(idx, sub)
 
         gSizer2.Add(self.subreddit_listctrl, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
@@ -278,7 +271,7 @@ class MyFrame(wx.Frame):
         bSizer6.Add(self.add_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
         self.remove_subreddit_button = wx.Button(
-            self.m_panel2, wx.ID_ANY, "Remove a subreddit", wx.DefaultPosition, wx.DefaultSize, 0
+            self.m_panel2, wx.ID_ANY, "Remove subreddits", wx.DefaultPosition, wx.DefaultSize, 0
         )
         self.remove_subreddit_button.Bind(wx.EVT_BUTTON, self.remove_subreddit)
         bSizer6.Add(self.remove_subreddit_button, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
@@ -363,18 +356,56 @@ class MyFrame(wx.Frame):
             choice.SetValue(0)
 
     def add_subreddit(self, event):
-        dlg = wx.TextEntryDialog(frame, 'Enter some text','Text Entry')
-        dlg.SetValue("Default")
+        """
+        Adds a subreddit using a text filed
+        """
+        dlg = wx.TextEntryDialog(frame, 'Enter a subreddit name','Subreddit')
+
         if dlg.ShowModal() == wx.ID_OK:
-            print('You entered: %s\n' % dlg.GetValue())
+            existing_subs = profile.read_subreddits()
+
+            new_sub = str(dlg.GetValue())
+            if new_sub:
+                existing_subs.append(new_sub)
+                new_subreddits_list = set(existing_subs)
+                self.update_subreddit_selectors(new_subreddits_list)
+                profile.write_subreddits(list(new_subreddits_list))
+
         dlg.Destroy()
 
     def remove_subreddit(self, event):
-        dlg = wx.TextEntryDialog(frame, 'Enter some text','Text Entry')
-        dlg.SetValue("Default")
-        if dlg.ShowModal() == wx.ID_OK:
-            print('You entered: %s\n' % dlg.GetValue())
-        dlg.Destroy()
+        item = self.subreddit_listctrl.GetFirstSelected()
+
+        subreddits_to_remove = []
+
+        while item != -1:
+            data = self.subreddit_listctrl.GetItem(item)
+            subreddits_to_remove.append(data.Text)
+            item = self.subreddit_listctrl.GetNextSelected(item)
+
+        existing_subs = profile.read_subreddits()
+
+        new_subreddit_list = [sub for sub in existing_subs if sub not in subreddits_to_remove]
+        self.update_subreddit_selectors(new_subreddit_list)
+        profile.write_subreddits(new_subreddit_list)
+
+    def update_subreddit_selectors(self, subreddits):
+        """
+        Ubdates the subreddit dropdown and list control with the current list of subreddits
+        """
+        self.subreddit_choices = subreddits
+
+        self.subreddit_listctrl.DeleteAllItems()
+        for idx, sub in enumerate(subreddits):
+            self.subreddit_listctrl.InsertItem(idx, sub)
+
+        self.sub_selector.Clear()
+        for sub in subreddits:
+            self.sub_selector.Append(sub)
+
+        if self.sub_selector_value and self.sub_selector_value in subreddits:
+            self.sub_selector.SetValue(self.sub_selector_value)
+
 
     def run(self, event):
         """
