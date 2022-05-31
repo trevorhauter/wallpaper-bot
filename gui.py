@@ -66,12 +66,12 @@ class MyFrame(wx.Frame):
 
         bSizer1 = wx.BoxSizer(wx.VERTICAL)
 
-        self.sub_selector = wx.StaticText(
+        self.sub_selector_label = wx.StaticText(
             self.m_panel1, wx.ID_ANY, "Subreddit", wx.DefaultPosition, wx.DefaultSize, 0
         )
-        self.sub_selector.Wrap(-1)
+        self.sub_selector_label.Wrap(-1)
 
-        bSizer1.Add(self.sub_selector, 0, wx.ALL, 5)
+        bSizer1.Add(self.sub_selector_label, 0, wx.ALL, 5)
 
         # Get all the subreddits from the local json file
         self.subreddit_choices = profile.read_subreddits()
@@ -383,11 +383,16 @@ class MyFrame(wx.Frame):
             subreddits_to_remove.append(data.Text)
             item = self.subreddit_listctrl.GetNextSelected(item)
 
-        existing_subs = profile.read_subreddits()
+        if subreddits_to_remove:
+            existing_subs = profile.read_subreddits()
 
-        new_subreddit_list = [sub for sub in existing_subs if sub not in subreddits_to_remove]
-        self.update_subreddit_selectors(new_subreddit_list)
-        profile.write_subreddits(new_subreddit_list)
+            new_subreddit_list = [sub for sub in existing_subs if sub not in subreddits_to_remove]
+            self.update_subreddit_selectors(new_subreddit_list)
+            profile.write_subreddits(new_subreddit_list)
+        else:
+            box = wx.MessageDialog(None,'In order to remove subreddits, please select 1 or more subreddits from the list', 'Invalid selection', wx.OK)
+            answer=box.ShowModal()
+            box.Destroy()
 
     def update_subreddit_selectors(self, subreddits):
         """
@@ -457,9 +462,15 @@ class MyFrame(wx.Frame):
         col = redditCollector(form, self.file_path)
         progress = col.collect_wallpapers()
 
-        for group in progress:
-            for count in group:
-                progress_bar.Update(count, "Downloading wallpaper #" + str(count))
+        try:
+            for group in progress:
+                for count in group:
+                    progress_bar.Update(count, "Downloading wallpaper #" + str(count))
+        except json.decoder.JSONDecodeError:
+            box = wx.MessageDialog(None,f'An error occurred during collection. Are you sure "{form["subreddit"]}" is a valid subreddit?', 'ERROR', wx.OK)
+            answer=box.ShowModal()
+            box.Destroy()
+
 
         progress_bar.Destroy()
 
